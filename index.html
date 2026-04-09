@@ -145,23 +145,33 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     }
 
-    .btn-facebook {
-      background: linear-gradient(135deg, #1877f2, #0d5fd8);
-      color: #fff;
-    }
-
-    .btn-zalo {
-      background: linear-gradient(135deg, #0068ff, #004ec2);
-      color: #fff;
-    }
-
+    .btn-facebook { background: linear-gradient(135deg, #1877f2, #0d5fd8); color: #fff; }
+    .btn-zalo { background: linear-gradient(135deg, #0068ff, #004ec2); color: #fff; }
     .btn svg { flex-shrink: 0; }
+
+    /* Contact form box */
+    .contact-box {
+      background: rgba(161,140,209,0.08);
+      border: 1px solid rgba(161,140,209,0.3);
+      border-radius: 18px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+
+    .contact-box-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #d4baff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     .contact-form {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 10px;
     }
 
     .contact-form input,
@@ -179,17 +189,16 @@
     }
 
     .contact-form input::placeholder,
-    .contact-form textarea::placeholder {
-      color: rgba(255,255,255,0.3);
-    }
+    .contact-form textarea::placeholder { color: rgba(255,255,255,0.3); }
 
     .contact-form input:focus,
     .contact-form textarea:focus {
-      border-color: rgba(161,140,209,0.6);
+      border-color: rgba(161,140,209,0.7);
       background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 3px rgba(161,140,209,0.12);
     }
 
-    .contact-form textarea { min-height: 100px; }
+    .contact-form textarea { min-height: 110px; }
 
     .btn-send {
       width: 100%;
@@ -206,17 +215,12 @@
 
     .btn-send:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(161,140,209,0.4);
+      box-shadow: 0 8px 24px rgba(161,140,209,0.45);
       filter: brightness(1.08);
     }
 
     .btn-send:active { transform: scale(0.97); }
-
-    .btn-send:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .btn-send:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .form-status {
       text-align: center;
@@ -240,6 +244,7 @@
       border: 1px solid rgba(255,77,109,0.3);
     }
 
+    /* Gift button */
     .btn-gift {
       width: 100%;
       margin-top: 14px;
@@ -333,12 +338,15 @@
 
     <hr class="divider" />
 
-    <p class="section-title">Gửi tin nhắn cho tôi</p>
-    <div class="contact-form">
-      <input id="sender-name" type="text" placeholder="Tên của bạn" maxlength="80" />
-      <textarea id="sender-msg" placeholder="Nội dung tin nhắn..." maxlength="1000"></textarea>
-      <button class="btn-send" onclick="sendMessage()">✉️ Gửi tin nhắn</button>
-      <div class="form-status" id="form-status"></div>
+    <p class="section-title">Để lại lời nhắn</p>
+    <div class="contact-box">
+      <div class="contact-box-title">💬 Gửi lời nhắn cho tôi</div>
+      <div class="contact-form">
+        <input id="sender-name" type="text" placeholder="✏️  Tên của bạn" maxlength="80" />
+        <textarea id="sender-msg" placeholder="💭  Lời nhắn của bạn..." maxlength="1000"></textarea>
+        <button class="btn-send" onclick="sendMessage()">📨 Gửi lời nhắn</button>
+        <div class="form-status" id="form-status"></div>
+      </div>
     </div>
 
     <button class="btn btn-gift" onclick="launchFireworks()" style="margin-top:20px">🎁 Tặng quà</button>
@@ -358,12 +366,12 @@
       const btn     = document.querySelector('.btn-send');
 
       if (!name) { showStatus('error', '⚠️ Vui lòng nhập tên của bạn.'); return; }
-      if (!message) { showStatus('error', '⚠️ Vui lòng nhập nội dung tin nhắn.'); return; }
+      if (!message) { showStatus('error', '⚠️ Vui lòng nhập lời nhắn.'); return; }
 
       btn.disabled = true;
       btn.textContent = '⏳ Đang gửi...';
 
-      const text = `📩 Tin nhắn mới từ profile!\n\n👤 Người gửi: ${name}\n💬 Nội dung:\n${message}`;
+      const text = `📩 Lời nhắn mới từ profile!\n\n👤 Người gửi: ${name}\n💬 Lời nhắn:\n${message}`;
 
       try {
         const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
@@ -373,7 +381,7 @@
         });
         const data = await res.json();
         if (data.ok) {
-          showStatus('success', '✅ Tin nhắn đã gửi thành công!');
+          showStatus('success', '✅ Lời nhắn đã gửi thành công!');
           document.getElementById('sender-name').value = '';
           document.getElementById('sender-msg').value  = '';
         } else {
@@ -384,7 +392,7 @@
       }
 
       btn.disabled = false;
-      btn.textContent = '✉️ Gửi tin nhắn';
+      btn.textContent = '📨 Gửi lời nhắn';
     }
 
     function showStatus(type, msg) {
