@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lưu Thiện Ân – Digital Profile</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #f0f0f0;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      max-width: 520px;
+      width: 100%;
+      padding: 40px 36px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Avatar */
+    .avatar-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 0 0 6px rgba(161, 140, 209, 0.2);
+    }
+
+    /* Name & role */
+    .name {
+      text-align: center;
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #a18cd1, #fbc2eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .role {
+      text-align: center;
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* Divider */
+    .divider {
+      margin: 28px 0;
+      border: none;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Bio */
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 10px;
+    }
+
+    .bio {
+      font-size: 0.97rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.82);
+    }
+
+    /* Skills */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .skill-tag {
+      background: rgba(161, 140, 209, 0.18);
+      border: 1px solid rgba(161, 140, 209, 0.35);
+      color: #d4baff;
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .skill-tag:hover {
+      background: rgba(161, 140, 209, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Social buttons */
+    .buttons {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 13px 10px;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    .btn-facebook {
+      background: linear-gradient(135deg, #1877f2, #0d5fd8);
+      color: #fff;
+    }
+
+    .btn-zalo {
+      background: linear-gradient(135deg, #0068ff, #004ec2);
+      color: #fff;
+    }
+
+    .btn svg {
+      flex-shrink: 0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- Avatar -->
+    <div class="avatar-wrap">
+      <div class="avatar">👤</div>
+    </div>
+
+    <!-- Name -->
+    <h1 class="name">Lưu Thiện Ân</h1>
+    <p class="role">Digital Profile · Bảng tự do</p>
+
+    <hr class="divider" />
+
+    <!-- About -->
+    <p class="section-title">Về tôi</p>
+    <p class="bio">
+      Chào các bạn, tôi là <strong>Ân Bựa</strong>. Tôi không thích học về
+      <em>AI Agent</em> lắm vì trông có vẻ khó — nhưng khả năng ở đây là điều
+      bắt buộc phải học. Tôi luôn sẵn sàng thích nghi và phát triển bản thân
+      mỗi ngày!
+    </p>
+
+    <hr class="divider" />
+
+    <!-- Skills -->
+    <p class="section-title">Kỹ năng</p>
+    <div class="skills">
+      <span class="skill-tag">⚡ Học hỏi nhanh</span>
+      <span class="skill-tag">🤝 Thấu hiểu</span>
+      <span class="skill-tag">📋 Quản lý</span>
+      <span class="skill-tag">📢 Tiếp thị</span>
+      <span class="skill-tag">⚙️ Vận hành</span>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Social links -->
+    <p class="section-title">Kết nối với tôi</p>
+    <div class="buttons">
+      <!-- Facebook -->
+      <a
+        class="btn btn-facebook"
+        href="https://www.facebook.com/profile.php?id=61578860867796"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+        </svg>
+        Facebook
+      </a>
+
+      <!-- Zalo -->
+      <a
+        class="btn btn-zalo"
+        href="https://zalo.me/0967885333"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg width="20" height="20" viewBox="0 0 48 48" fill="currentColor">
+          <path d="M24 4C12.95 4 4 12.95 4 24c0 4.28 1.27 8.26 3.45 11.6L4 44l8.68-3.39A19.88 19.88 0 0024 44c11.05 0 20-8.95 20-20S35.05 4 24 4zm9.6 27.2c-.4 1.1-2.36 2.14-3.24 2.28-.83.13-1.88.18-3.04-.19a27.54 27.54 0 01-2.74-1.01c-4.8-2.07-7.93-6.93-8.17-7.25-.24-.32-1.95-2.59-1.95-4.95 0-2.36 1.23-3.52 1.67-4 .44-.48.96-.6 1.28-.6.32 0 .64.01.92.02.3.01.7-.11 1.09.84.41 1 1.39 3.36 1.51 3.6.12.24.2.52.04.84-.16.32-.24.52-.48.8-.24.28-.5.62-.72.83-.24.24-.49.5-.21.98.28.48 1.24 2.06 2.67 3.33 1.83 1.64 3.38 2.15 3.86 2.39.48.24.76.2 1.04-.12.28-.32 1.2-1.4 1.52-1.88.32-.48.64-.4 1.08-.24.44.16 2.8 1.32 3.28 1.56.48.24.8.36.92.56.12.2.12 1.12-.28 2.21z"/>
+        </svg>
+        Zalo
+      </a>
+    </div>
+
+    <p class="footer">© 2026 Lưu Thiện Ân · All rights reserved</p>
+  </div>
+</body>
+</html>
