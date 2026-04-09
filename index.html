@@ -165,6 +165,92 @@
       flex-shrink: 0;
     }
 
+    /* Contact form */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #f0f0f0;
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      resize: none;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: rgba(161,140,209,0.6);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .contact-form textarea {
+      min-height: 100px;
+    }
+
+    .btn-send {
+      width: 100%;
+      border: none;
+      background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      color: #1a0a00;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 13px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    }
+
+    .btn-send:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(161,140,209,0.4);
+      filter: brightness(1.08);
+    }
+
+    .btn-send:active { transform: scale(0.97); }
+
+    .btn-send:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .form-status {
+      text-align: center;
+      font-size: 0.85rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .form-status.success {
+      display: block;
+      background: rgba(43,255,136,0.12);
+      color: #2bff88;
+      border: 1px solid rgba(43,255,136,0.3);
+    }
+
+    .form-status.error {
+      display: block;
+      background: rgba(255,77,109,0.12);
+      color: #ff4d6d;
+      border: 1px solid rgba(255,77,109,0.3);
+    }
+
     /* Gift button */
     .btn-gift {
       width: 100%;
@@ -279,8 +365,19 @@
       </a>
     </div>
 
+    <hr class="divider" />
+
+    <!-- Contact form -->
+    <p class="section-title">Gửi tin nhắn cho tôi</p>
+    <div class="contact-form">
+      <input id="sender-name" type="text" placeholder="Tên của bạn" maxlength="80" />
+      <textarea id="sender-msg" placeholder="Nội dung tin nhắn..." maxlength="1000"></textarea>
+      <button class="btn-send" onclick="sendMessage()">✉️ Gửi tin nhắn</button>
+      <div class="form-status" id="form-status"></div>
+    </div>
+
     <!-- Gift button -->
-    <button class="btn btn-gift" onclick="launchFireworks()">🎁 Tặng quà</button>
+    <button class="btn btn-gift" onclick="launchFireworks()" style="margin-top:20px">🎁 Tặng quà</button>
 
     <p class="footer">© 2026 Lưu Thiện Ân · All rights reserved</p>
   </div>
@@ -289,6 +386,59 @@
   <canvas id="fireworks-canvas"></canvas>
 
   <script>
+    // ============================================================
+    // CẤU HÌNH TELEGRAM — điền 2 giá trị bên dưới
+    // ============================================================
+    const TG_TOKEN   = 'YOUR_BOT_TOKEN';   // Token từ @BotFather
+    const TG_CHAT_ID = 'YOUR_CHAT_ID';     // ID số từ @userinfobot
+    // ============================================================
+
+    async function sendMessage() {
+      const name    = document.getElementById('sender-name').value.trim();
+      const message = document.getElementById('sender-msg').value.trim();
+      const status  = document.getElementById('form-status');
+      const btn     = document.querySelector('.btn-send');
+
+      if (!name) { showStatus('error', '⚠️ Vui lòng nhập tên của bạn.'); return; }
+      if (!message) { showStatus('error', '⚠️ Vui lòng nhập nội dung tin nhắn.'); return; }
+      if (TG_TOKEN === 'YOUR_BOT_TOKEN') {
+        showStatus('error', '⚙️ Chưa cấu hình Bot Token. Liên hệ chủ trang để khắc phục.'); return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Đang gửi...';
+
+      const text = `📩 Tin nhắn mới từ profile!\n\n👤 Người gửi: ${name}\n💬 Nội dung:\n${message}`;
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: 'HTML' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showStatus('success', '✅ Tin nhắn đã gửi thành công!');
+          document.getElementById('sender-name').value = '';
+          document.getElementById('sender-msg').value  = '';
+        } else {
+          showStatus('error', '❌ Gửi thất bại: ' + (data.description || 'Lỗi không xác định'));
+        }
+      } catch (e) {
+        showStatus('error', '❌ Không kết nối được. Vui lòng thử lại.');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '✉️ Gửi tin nhắn';
+    }
+
+    function showStatus(type, msg) {
+      const el = document.getElementById('form-status');
+      el.className = 'form-status ' + type;
+      el.textContent = msg;
+      setTimeout(() => { el.className = 'form-status'; }, 5000);
+    }
+
     const canvas = document.getElementById('fireworks-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
