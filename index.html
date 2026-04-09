@@ -337,11 +337,9 @@
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
 
-        // save trail point
         p.trail.push({ x: p.x, y: p.y, alpha: p.alpha });
         if (p.trail.length > 6) p.trail.shift();
 
-        // draw trail
         for (let t = 0; t < p.trail.length; t++) {
           const tp = p.trail[t];
           ctx.globalAlpha = tp.alpha * (t / p.trail.length) * 0.4;
@@ -351,14 +349,12 @@
           ctx.fill();
         }
 
-        // draw particle
         ctx.globalAlpha = p.alpha;
         ctx.fillStyle = p.color;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // update physics
         p.x  += p.vx;
         p.y  += p.vy;
         p.vy += p.gravity;
@@ -372,7 +368,6 @@
 
       const now = performance.now();
       if (now < stopAt) {
-        // keep spawning random bursts while active
         if (Math.random() < 0.18) {
           spawnBurst(
             randomBetween(canvas.width * 0.1, canvas.width  * 0.9),
@@ -389,9 +384,8 @@
     }
 
     function launchFireworks() {
-      stopAt = performance.now() + 3500; // run new bursts for 3.5 s
+      stopAt = performance.now() + 3500;
 
-      // immediate cluster of bursts
       const cx = canvas.width  / 2;
       const cy = canvas.height / 2;
       spawnBurst(cx, cy * 0.4);
