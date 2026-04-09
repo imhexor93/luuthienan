@@ -157,7 +157,6 @@
 
     .btn svg { flex-shrink: 0; }
 
-    /* Contact form */
     .contact-form {
       display: flex;
       flex-direction: column;
@@ -241,7 +240,6 @@
       border: 1px solid rgba(255,77,109,0.3);
     }
 
-    /* Gift button */
     .btn-gift {
       width: 100%;
       margin-top: 14px;
@@ -351,12 +349,8 @@
   <canvas id="fireworks-canvas"></canvas>
 
   <script>
-    // ============================================================
-    // CẤU HÌNH TELEGRAM — điền 2 giá trị bên dưới
-    // ============================================================
-    const TG_TOKEN   = 'YOUR_BOT_TOKEN';   // Token từ @BotFather
-    const TG_CHAT_ID = 'YOUR_CHAT_ID';     // ID số từ @userinfobot
-    // ============================================================
+    const TG_TOKEN   = '8726213535:AAGHqnz3JgY8QLMJQv0y93v8UYuA0mbVROc';
+    const TG_CHAT_ID = '727117983';
 
     async function sendMessage() {
       const name    = document.getElementById('sender-name').value.trim();
@@ -365,9 +359,6 @@
 
       if (!name) { showStatus('error', '⚠️ Vui lòng nhập tên của bạn.'); return; }
       if (!message) { showStatus('error', '⚠️ Vui lòng nhập nội dung tin nhắn.'); return; }
-      if (TG_TOKEN === 'YOUR_BOT_TOKEN') {
-        showStatus('error', '⚙️ Chưa cấu hình Bot Token. Liên hệ chủ trang để khắc phục.'); return;
-      }
 
       btn.disabled = true;
       btn.textContent = '⏳ Đang gửi...';
