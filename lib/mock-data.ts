@@ -25,6 +25,7 @@ export const mockKols: Kol[] = [
         clicks: 31_000,
         orders: 1_350,
         revenue: 12_000_000,
+        return_rate: 3.2,
         status: 'COMPLETED',
       },
       {
@@ -41,6 +42,7 @@ export const mockKols: Kol[] = [
         clicks: 45_000,
         orders: 3_200,
         revenue: 20_000_000,
+        return_rate: 4.5,
         status: 'COMPLETED',
       },
       {
@@ -57,6 +59,7 @@ export const mockKols: Kol[] = [
         clicks: 19_000,
         orders: 890,
         revenue: 4_500_000,
+        return_rate: 2.8,
         status: 'COMPLETED',
       },
     ],
@@ -85,6 +88,7 @@ export const mockKols: Kol[] = [
         clicks: 42_000,
         orders: 2_100,
         revenue: 16_000_000,
+        return_rate: 5.1,
         status: 'COMPLETED',
       },
       {
@@ -101,6 +105,7 @@ export const mockKols: Kol[] = [
         clicks: 58_000,
         orders: 4_200,
         revenue: 28_000_000,
+        return_rate: 6.3,
         status: 'COMPLETED',
       },
     ],
@@ -129,6 +134,7 @@ export const mockKols: Kol[] = [
         clicks: 22_000,
         orders: 680,
         revenue: 6_500_000,
+        return_rate: 2.5,
         status: 'COMPLETED',
       },
       {
@@ -145,6 +151,7 @@ export const mockKols: Kol[] = [
         clicks: 14_000,
         orders: 950,
         revenue: 2_800_000,
+        return_rate: 3.1,
         status: 'COMPLETED',
       },
       {
@@ -161,6 +168,7 @@ export const mockKols: Kol[] = [
         clicks: 28_000,
         orders: 2_400,
         revenue: 10_000_000,
+        return_rate: 4.2,
         status: 'COMPLETED',
       },
       {
@@ -177,6 +185,7 @@ export const mockKols: Kol[] = [
         clicks: 11_000,
         orders: 520,
         revenue: 3_600_000,
+        return_rate: 2.9,
         status: 'COMPLETED',
       },
     ],
@@ -205,6 +214,7 @@ export const mockKols: Kol[] = [
         clicks: 85_000,
         orders: 5_600,
         revenue: 32_000_000,
+        return_rate: 12.4,
         status: 'COMPLETED',
       },
       {
@@ -221,6 +231,7 @@ export const mockKols: Kol[] = [
         clicks: 95_000,
         orders: 8_100,
         revenue: 45_000_000,
+        return_rate: 14.8,
         status: 'COMPLETED',
       },
       {
@@ -230,13 +241,14 @@ export const mockKols: Kol[] = [
         collaboration_date: '2024-09-10',
         pic: 'Thu Hà',
         collab_type: 'COMBO',
-        platform: 'TikTok', // Combo chạy chính trên TikTok, Shopee là affiliate link
+        platform: 'TikTok',
         booking_fee: 70_000_000,
         gmv: 1_200_000_000,
         views: 350_000,
         clicks: 120_000,
         orders: 11_500,
         revenue: 58_000_000,
+        return_rate: 11.2,
         status: 'COMPLETED',
       },
     ],
@@ -265,6 +277,7 @@ export const mockKols: Kol[] = [
         clicks: 28_000,
         orders: 850,
         revenue: 10_000_000,
+        return_rate: 7.3,
         status: 'COMPLETED',
       },
       {
@@ -281,6 +294,7 @@ export const mockKols: Kol[] = [
         clicks: 35_000,
         orders: 620,
         revenue: 7_200_000,
+        return_rate: 6.8,
         status: 'COMPLETED',
       },
     ],
@@ -310,6 +324,7 @@ export const mockKols: Kol[] = [
         clicks: 12_000,
         orders: 380,
         revenue: 6_500_000,
+        return_rate: 4.1,
         status: 'COMPLETED',
       },
     ],

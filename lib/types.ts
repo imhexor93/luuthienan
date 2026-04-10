@@ -20,6 +20,7 @@ export interface Campaign {
   clicks?: number
   orders?: number
   revenue?: number     // VND - actual revenue received
+  return_rate?: number // % tỷ lệ hoàn hàng, e.g. 3.2 = 3.2%
   status: CampaignStatus
   notes?: string
 }
