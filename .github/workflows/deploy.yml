@@ -3,8 +3,8 @@ name: Deploy to Vercel
 on:
   push:
     branches:
-      - main
-  workflow_dispatch: # cho phép chạy thủ công từ GitHub UI
+      - claude/koc-kol-management-app-V4Bvv
+  workflow_dispatch: # cho phép chạy thủ công từ tab Actions trên GitHub
 
 jobs:
   deploy:
