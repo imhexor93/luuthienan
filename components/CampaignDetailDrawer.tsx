@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Kol } from '@/lib/types'
 import { formatMoney, formatMoneyFull } from '@/lib/utils'
 import { COLLAB_LABEL, COLLAB_COLOR, STATUS_CONFIG, PLATFORM_COLOR } from '@/lib/constants'
+import KolTrendChart from '@/components/KolTrendChart'
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 
@@ -287,6 +288,19 @@ export default function CampaignDetailDrawer({ kol, onClose }: Props) {
                 accent="bg-gray-50"
               />
             </div>
+          </section>
+
+          {/* ── Xu hướng hiệu quả – Chart ────────────────────────── */}
+          <section className="px-6 py-5 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                Xu hướng Phí Booking vs GMV
+              </h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-4">
+              Theo thứ tự thời gian · đánh giá hiệu quả theo từng lần hợp tác
+            </p>
+            <KolTrendChart campaigns={campaigns} />
           </section>
 
           {/* ── Lịch sử chiến dịch – Timeline ──────────────────────── */}
