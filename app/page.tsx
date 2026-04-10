@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useSession, signOut } from 'next-auth/react'
 import KolTable from '@/components/KolTable'
 import CampaignDetailDrawer from '@/components/CampaignDetailDrawer'
 import { mockKols, buildDashboardRows, getDashboardStats } from '@/lib/mock-data'
@@ -73,6 +74,8 @@ const IconPlus = () => (
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
+  const { data: session } = useSession()
+
   // Fix 4: memoize derived data — avoids recomputing on every render
   const rows  = useMemo(() => buildDashboardRows(mockKols), [])
   const stats = useMemo(() => getDashboardStats(mockKols), [])
@@ -114,12 +117,34 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400 hidden sm:block">Dữ liệu mock · Phase 3</span>
+            <span className="text-xs text-gray-400 hidden sm:block">Dữ liệu mock · Phase 4</span>
             <button className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700
               text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm">
               <IconPlus />
               Thêm KOL
             </button>
+            {/* User info + logout */}
+            <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
+              <div className="hidden sm:flex flex-col items-end leading-tight">
+                <span className="text-xs font-medium text-gray-700">
+                  {session?.user?.name ?? ''}
+                </span>
+                <span className="text-[10px] text-gray-400">Đã đăng nhập</span>
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: '/login' })}
+                title="Đăng xuất"
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-red-600
+                  bg-gray-100 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7
+                    a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="hidden sm:inline">Đăng xuất</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
