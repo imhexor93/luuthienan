@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import KolTable from '@/components/KolTable'
 import CampaignDetailDrawer from '@/components/CampaignDetailDrawer'
 import { mockKols, buildDashboardRows, getDashboardStats } from '@/lib/mock-data'
@@ -73,8 +73,9 @@ const IconPlus = () => (
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const rows  = buildDashboardRows(mockKols)
-  const stats = getDashboardStats(mockKols)
+  // Fix 4: memoize derived data — avoids recomputing on every render
+  const rows  = useMemo(() => buildDashboardRows(mockKols), [])
+  const stats = useMemo(() => getDashboardStats(mockKols), [])
 
   // Detail drawer state: holds the full Kol object (null = closed)
   const [activeKol, setActiveKol] = useState<Kol | null>(null)
@@ -83,10 +84,11 @@ export default function DashboardPage() {
     ? ((stats.totalGmv - stats.totalBookingFee) / stats.totalBookingFee * 100).toFixed(0)
     : '0'
 
-  function handleViewDetail(id: string) {
+  // Fix 5: stable reference — prevents KolTable from receiving a new prop reference on every render
+  const handleViewDetail = useCallback((id: string) => {
     const kol = mockKols.find((k) => k.id === id) ?? null
     setActiveKol(kol)
-  }
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">

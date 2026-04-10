@@ -1,37 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { Kol, CollabType, KolStatus, CampaignPlatform } from '@/lib/types'
+import { Kol } from '@/lib/types'
 import { formatMoney, formatMoneyFull } from '@/lib/utils'
-
-// ─── Shared label/color maps ─────────────────────────────────────────────────
-
-const COLLAB_LABEL: Record<CollabType, string> = {
-  VIDEO_REVIEW: 'Video Review',
-  LIVESTREAM: 'Livestream',
-  AFFILIATE: 'Affiliate',
-  COMBO: 'Combo',
-  OTHER: 'Khác',
-}
-
-const COLLAB_COLOR: Record<CollabType, string> = {
-  VIDEO_REVIEW: 'bg-purple-100 text-purple-700 border-purple-200',
-  LIVESTREAM: 'bg-red-100 text-red-700 border-red-200',
-  AFFILIATE: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  COMBO: 'bg-blue-100 text-blue-700 border-blue-200',
-  OTHER: 'bg-gray-100 text-gray-600 border-gray-200',
-}
-
-const STATUS_CONFIG: Record<KolStatus, { dot: string; label: string; bg: string }> = {
-  ACTIVE:    { dot: 'bg-emerald-400', label: 'Đang hợp tác', bg: 'bg-emerald-50 text-emerald-700' },
-  INACTIVE:  { dot: 'bg-yellow-400',  label: 'Tạm dừng',     bg: 'bg-yellow-50 text-yellow-700'  },
-  BLACKLIST: { dot: 'bg-red-500',     label: 'Blacklist',     bg: 'bg-red-50 text-red-700'        },
-}
-
-const PLATFORM_COLOR: Record<CampaignPlatform, string> = {
-  TikTok: 'bg-zinc-900 text-white',
-  Shopee: 'bg-orange-500 text-white',
-}
+import { COLLAB_LABEL, COLLAB_COLOR, STATUS_CONFIG, PLATFORM_COLOR } from '@/lib/constants'
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 
@@ -48,7 +20,9 @@ function fmtPct(n: number | undefined): string {
 }
 
 function fmtDate(iso: string): string {
+  if (!iso) return '–'                   // Fix 2: guard against empty string
   const d = new Date(iso)
+  if (isNaN(d.getTime())) return '–'    // Fix 2: guard against Invalid Date
   return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
@@ -138,8 +112,8 @@ export default function CampaignDetailDrawer({ kol, onClose }: Props) {
     }
   }, [kol])
 
-  // ESC key
-  const handleClose = useCallback(onClose, [onClose])
+  // Fix 1: wrap inline so useCallback memoizes a stable closure, not the raw prop reference
+  const handleClose = useCallback(() => onClose(), [onClose])
   useEffect(() => {
     if (!kol) return
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose() }
@@ -226,7 +200,7 @@ export default function CampaignDetailDrawer({ kol, onClose }: Props) {
                 </p>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full
-                    text-xs font-medium ${statusCfg.bg}`}>
+                    text-xs font-medium ${statusCfg.badge}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
                     {statusCfg.label}
                   </span>

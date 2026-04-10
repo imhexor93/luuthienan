@@ -1,38 +1,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { KolDashboardRow, CollabType, KolStatus } from '@/lib/types'
+import { KolDashboardRow } from '@/lib/types'
 import { formatMoney, formatMoneyFull } from '@/lib/utils'
-
-// ─── Label & Color Maps ──────────────────────────────────────────────────────
-
-const COLLAB_LABEL: Record<CollabType, string> = {
-  VIDEO_REVIEW: 'Video Review',
-  LIVESTREAM: 'Livestream',
-  AFFILIATE: 'Affiliate',
-  COMBO: 'Combo',
-  OTHER: 'Khác',
-}
-
-const COLLAB_COLOR: Record<CollabType, string> = {
-  VIDEO_REVIEW: 'bg-purple-100 text-purple-700 border-purple-200',
-  LIVESTREAM: 'bg-red-100 text-red-700 border-red-200',
-  AFFILIATE: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  COMBO: 'bg-blue-100 text-blue-700 border-blue-200',
-  OTHER: 'bg-gray-100 text-gray-600 border-gray-200',
-}
-
-const STATUS_DOT: Record<KolStatus, string> = {
-  ACTIVE: 'bg-emerald-400',
-  INACTIVE: 'bg-yellow-400',
-  BLACKLIST: 'bg-red-500',
-}
-
-const STATUS_LABEL: Record<KolStatus, string> = {
-  ACTIVE: 'Đang hợp tác',
-  INACTIVE: 'Tạm dừng',
-  BLACKLIST: 'Blacklist',
-}
+import { COLLAB_LABEL, COLLAB_COLOR, STATUS_CONFIG } from '@/lib/constants'
 
 // ─── External Link Icon ───────────────────────────────────────────────────────
 
@@ -155,8 +126,8 @@ export default function KolTable({ rows, onViewDetail }: KolTableProps) {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${STATUS_DOT[row.status]}`}
-                        title={STATUS_LABEL[row.status]}
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${STATUS_CONFIG[row.status].dot}`}
+                        title={STATUS_CONFIG[row.status].label}
                       />
                       <div>
                         <div className="font-medium text-gray-900 leading-snug">{row.name}</div>
