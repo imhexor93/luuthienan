@@ -4,18 +4,19 @@ on:
   push:
     branches:
       - claude/koc-kol-management-app-V4Bvv
-  workflow_dispatch: # cho phép chạy thủ công từ tab Actions trên GitHub
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -23,10 +24,43 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Deploy to Vercel
-        run: npx vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
-        env:
-          NEXTAUTH_SECRET:          ${{ secrets.NEXTAUTH_SECRET }}
-          AUTH_PASSWORD_ADMIN:      ${{ secrets.AUTH_PASSWORD_ADMIN }}
-          AUTH_PASSWORD_MANAGER:    ${{ secrets.AUTH_PASSWORD_MANAGER }}
-          AUTH_PASSWORD_VIEWER:     ${{ secrets.AUTH_PASSWORD_VIEWER }}
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      # ── Bước 1: Deploy lần đầu → tạo project + lấy URL ───────────────────────
+      - name: Deploy lần 1 (tạo project)
+        id: deploy1
+        run: |
+          OUTPUT=$(vercel --token="$VERCEL_TOKEN" --prod --yes 2>&1)
+          echo "$OUTPUT"
+          URL=$(echo "$OUTPUT" | grep -Eo 'https://[a-zA-Z0-9._-]+\.vercel\.app' | tail -1)
+          echo "DEPLOY_URL=$URL" >> $GITHUB_ENV
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      # ── Bước 2: Đặt tất cả biến môi trường vào Vercel ─────────────────────────
+      - name: Thiết lập biến môi trường
+        run: |
+          set_var() {
+            vercel env rm "$1" production --yes --token="$VERCEL_TOKEN" 2>/dev/null || true
+            printf '%s' "$2" | vercel env add "$1" production --token="$VERCEL_TOKEN"
+          }
+          set_var "NEXTAUTH_SECRET"       "${{ secrets.NEXTAUTH_SECRET }}"
+          set_var "NEXTAUTH_URL"          "${{ env.DEPLOY_URL }}"
+          set_var "AUTH_PASSWORD_ADMIN"   "${{ secrets.AUTH_PASSWORD_ADMIN }}"
+          set_var "AUTH_PASSWORD_MANAGER" "${{ secrets.AUTH_PASSWORD_MANAGER }}"
+          set_var "AUTH_PASSWORD_VIEWER"  "${{ secrets.AUTH_PASSWORD_VIEWER }}"
+
+      # ── Bước 3: Deploy lần 2 → app chạy với đầy đủ env vars ──────────────────
+      - name: Deploy lần 2 (final với env vars)
+        run: vercel --token="$VERCEL_TOKEN" --prod --yes
+
+      # ── In kết quả ────────────────────────────────────────────────────────────
+      - name: ✅ Kết quả
+        run: |
+          echo "================================================"
+          echo "  DEPLOY THÀNH CÔNG!"
+          echo "================================================"
+          echo "  🌐 Link app : ${{ env.DEPLOY_URL }}"
+          echo "  👤 User     : admin"
+          echo "  🔑 Pass     : (AUTH_PASSWORD_ADMIN bạn đã đặt)"
+          echo "================================================"
