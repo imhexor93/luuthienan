@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import {
   BarChart,
   Bar,
@@ -9,7 +10,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts'
 import { Campaign } from '@/lib/types'
 import { formatMoneyFull } from '@/lib/utils'
@@ -37,7 +37,6 @@ interface ChartPoint {
   name: string        // "Lần 1", "Lần 2"...
   date: string        // formatted date for tooltip
   campaignName: string
-  collabType: string
   bookingFee: number
   gmv: number
   roas: string
@@ -137,39 +136,43 @@ interface Props {
 
 export default function KolTrendChart({ campaigns }: Props) {
   // Sort chronologically so Lần 1 = oldest, Lần N = most recent
-  const data: ChartPoint[] = [...campaigns]
-    .sort(
-      (a, b) =>
-        new Date(a.collaboration_date).getTime() -
-        new Date(b.collaboration_date).getTime()
-    )
-    .map((c, i) => {
-      const gmv = c.gmv ?? 0
-      const roas = c.booking_fee > 0 ? gmv / c.booking_fee : 0
-      return {
-        name: `Lần ${i + 1}`,
-        date: (() => {
-          const d = new Date(c.collaboration_date)
-          return isNaN(d.getTime())
-            ? c.collaboration_date
-            : d.toLocaleDateString('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-              })
-        })(),
-        campaignName: c.campaign_name,
-        collabType: c.collab_type,
-        bookingFee: c.booking_fee,
-        gmv,
-        roas: roas > 0 ? `${roas.toFixed(1)}x` : '–',
-      }
-    })
+  const data = useMemo<ChartPoint[]>(
+    () =>
+      [...campaigns]
+        .sort(
+          (a, b) =>
+            new Date(a.collaboration_date).getTime() -
+            new Date(b.collaboration_date).getTime()
+        )
+        .map((c, i) => {
+          const gmv = c.gmv ?? 0
+          const roas = c.booking_fee > 0 ? gmv / c.booking_fee : 0
+          return {
+            name: `Lần ${i + 1}`,
+            date: (() => {
+              const d = new Date(c.collaboration_date)
+              return isNaN(d.getTime())
+                ? c.collaboration_date
+                : d.toLocaleDateString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })
+            })(),
+            campaignName: c.campaign_name,
+            bookingFee: c.booking_fee,
+            gmv,
+            roas: roas > 0 ? `${roas.toFixed(1)}x` : '–',
+          }
+        }),
+    [campaigns]
+  )
 
   // Detect if GMV trend is growing (used to show a hint label)
-  const isGmvGrowing =
-    data.length >= 2 &&
-    data[data.length - 1].gmv > data[0].gmv
+  const isGmvGrowing = useMemo(
+    () => data.length >= 2 && data[data.length - 1].gmv > data[0].gmv,
+    [data]
+  )
 
   return (
     <div className="space-y-2">
@@ -228,7 +231,7 @@ export default function KolTrendChart({ campaigns }: Props) {
 
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ fill: '#f9fafb', radius: [6, 6, 0, 0] as unknown as number }}
+            cursor={{ fill: '#f9fafb' }}
           />
 
           <Legend content={<CustomLegend />} />
