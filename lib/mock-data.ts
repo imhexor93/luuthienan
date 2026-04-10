@@ -230,7 +230,7 @@ export const mockKols: Kol[] = [
         collaboration_date: '2024-09-10',
         pic: 'Thu Hà',
         collab_type: 'COMBO',
-        platform: 'Both',
+        platform: 'TikTok', // Combo chạy chính trên TikTok, Shopee là affiliate link
         booking_fee: 70_000_000,
         gmv: 1_200_000_000,
         views: 350_000,

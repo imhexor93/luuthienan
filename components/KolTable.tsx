@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { KolDashboardRow, CollabType, KolStatus } from '@/lib/types'
+import { formatMoney, formatMoneyFull } from '@/lib/utils'
 
 // ─── Label & Color Maps ──────────────────────────────────────────────────────
 
@@ -31,22 +32,6 @@ const STATUS_LABEL: Record<KolStatus, string> = {
   ACTIVE: 'Đang hợp tác',
   INACTIVE: 'Tạm dừng',
   BLACKLIST: 'Blacklist',
-}
-
-// ─── Formatters ──────────────────────────────────────────────────────────────
-
-function formatMoney(amount: number): string {
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(1).replace('.0', '')} tỷ ₫`
-  }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(1).replace('.0', '')} tr ₫`
-  }
-  return `${amount.toLocaleString('vi-VN')} ₫`
-}
-
-function formatMoneyFull(amount: number): string {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount)
 }
 
 // ─── External Link Icon ───────────────────────────────────────────────────────
@@ -108,7 +93,7 @@ export default function KolTable({ rows, onViewDetail }: KolTableProps) {
             placeholder="Tìm theo tên, ngành hàng, PIC..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg w-72
+            className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg w-full sm:w-72
               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
               placeholder:text-gray-400"
           />
@@ -148,7 +133,7 @@ export default function KolTable({ rows, onViewDetail }: KolTableProps) {
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-100">
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-6 py-16 text-center text-gray-400 text-sm">
@@ -247,7 +232,7 @@ export default function KolTable({ rows, onViewDetail }: KolTableProps) {
                       onClick={() => onViewDetail(row.id)}
                       title={`Tổng GMV: ${formatMoneyFull(row.total_gmv)}\nSố chiến dịch: ${row.total_campaigns}\nNhấn để xem chi tiết`}
                       className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800
-                        font-semibold tabular-nums cursor-pointer group/btn
+                        font-semibold tabular-nums cursor-pointer
                         hover:underline underline-offset-2 transition-colors"
                     >
                       {formatMoney(row.gmv_per_campaign)}

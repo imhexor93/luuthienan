@@ -1,20 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import KolTable from '@/components/KolTable'
 import { mockKols, buildDashboardRows, getDashboardStats } from '@/lib/mock-data'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatMoney(amount: number): string {
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(1).replace('.0', '')} tỷ ₫`
-  }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(0)} tr ₫`
-  }
-  return `${amount.toLocaleString('vi-VN')} ₫`
-}
+import { formatMoney } from '@/lib/utils'
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 
@@ -83,6 +72,15 @@ export default function DashboardPage() {
   const rows = buildDashboardRows(mockKols)
   const stats = getDashboardStats(mockKols)
   const [detailId, setDetailId] = useState<string | null>(null)
+
+  // Fix 5: close modal on ESC key
+  const closeModal = useCallback(() => setDetailId(null), [])
+  useEffect(() => {
+    if (!detailId) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') closeModal() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [detailId, closeModal])
 
   const roi = stats.totalBookingFee > 0
     ? ((stats.totalGmv - stats.totalBookingFee) / stats.totalBookingFee * 100).toFixed(0)
@@ -169,7 +167,7 @@ export default function DashboardPage() {
         {detailId && (
           <div
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6"
-            onClick={() => setDetailId(null)}
+            onClick={closeModal}
           >
             <div
               className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
@@ -178,7 +176,8 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-900">Chi tiết hiệu quả hợp tác</h3>
                 <button
-                  onClick={() => setDetailId(null)}
+                  onClick={closeModal}
+                  aria-label="Đóng"
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

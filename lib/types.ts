@@ -3,6 +3,9 @@ export type KolStatus = 'ACTIVE' | 'INACTIVE' | 'BLACKLIST'
 export type CollabType = 'VIDEO_REVIEW' | 'LIVESTREAM' | 'AFFILIATE' | 'COMBO' | 'OTHER'
 export type CampaignStatus = 'PLANNED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED'
 
+// A campaign always runs on one specific platform, never "Both"
+export type CampaignPlatform = Exclude<Platform, 'Both'>
+
 export interface Campaign {
   id: string
   kol_id: string
@@ -10,7 +13,7 @@ export interface Campaign {
   collaboration_date: string // ISO date string YYYY-MM-DD
   pic: string
   collab_type: CollabType
-  platform: Platform
+  platform: CampaignPlatform
   booking_fee: number  // VND
   gmv?: number         // VND - Gross Merchandise Value
   views?: number
