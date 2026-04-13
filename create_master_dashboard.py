@@ -8,6 +8,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.worksheet.hyperlink import Hyperlink
 from datetime import datetime, timedelta
 
 # ============================================================
@@ -288,15 +289,50 @@ tasks = [
 ]
 
 # ============================================================
+# 1b. Định nghĩa Team & KPI cho sheet phòng ban
+# ============================================================
+
+CREATIVE_DEPTS = {"Creative", "Content", "Design"}
+BOOKING_DEPTS = {"Booking", "KOC/PR"}
+
+# KPI gợi ý theo từng task
+KPI_MAP = {
+    # Team Creative
+    "GD1-02": "Hoàn thành 3 kịch bản outline được duyệt",
+    "GD2-01": "Bộ 20 ảnh nền trắng + 10 ảnh concept / dòng SP",
+    "GD2-02": "6 banner (2 sàn x 3 size) đúng spec, duyệt lần 1",
+    "GD2-03": "Listing đạt điểm SEO ≥ 80 trên tool check",
+    "GD3-02": "3 video teaser đạt ≥ 50K views trong 48h",
+    "GD4-01": "Tổng views D-Day ≥ 200K, engagement rate ≥ 5%",
+    "GD5-03": "Đăng ≥ 10 bài seeding, reach ≥ 30K",
+    # Team Booking
+    "GD1-03": "List ≥ 15 KOC phù hợp, gửi brief trong 3 ngày",
+    "GD3-01": "100% PR Box gửi đúng hạn, có tracking",
+    "GD4-02": "≥ 10 KOC đăng bài đúng D-Day, kèm link Affiliate",
+    "GD6-01": "Báo cáo đối soát hoàn thành trong 3 ngày, sai lệch < 2%",
+}
+
+# ============================================================
 # 2. Tạo DataFrame và ghi ra Excel
 # ============================================================
 
 df = pd.DataFrame(tasks)
 
+# Tạo DataFrame cho Team Creative & Team Booking
+df_creative = df[df["Phòng ban"].isin(CREATIVE_DEPTS)].copy()
+df_creative["KPI / Yêu cầu đầu ra"] = df_creative["Mã Task"].map(KPI_MAP).fillna("")
+df_creative["Ghi chú nội bộ"] = ""
+
+df_booking = df[df["Phòng ban"].isin(BOOKING_DEPTS)].copy()
+df_booking["KPI / Yêu cầu đầu ra"] = df_booking["Mã Task"].map(KPI_MAP).fillna("")
+df_booking["Ghi chú nội bộ"] = ""
+
 OUTPUT_FILE = "TIAN_Launch_MasterPlan_6Phases.xlsx"
 
 with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
     df.to_excel(writer, sheet_name="Master Dashboard", index=False)
+    df_creative.to_excel(writer, sheet_name="Team_Creative", index=False)
+    df_booking.to_excel(writer, sheet_name="Team_Booking", index=False)
 
 # ============================================================
 # 3. Định dạng (format) bằng openpyxl
@@ -404,12 +440,109 @@ for row_idx in range(2, ws.max_row + 1):
             cell.fill = fill
 
 # ============================================================
-# 4. Lưu file
+# 4. Tạo Hyperlink tại cột "Link Sheet Chi tiết" trên Master Dashboard
+# ============================================================
+
+LINK_COL = 10  # Cột J
+hyperlink_font = Font(name="Arial", size=10, color="0563C1", underline="single")
+
+# Xây dựng map: Mã Task → (sheet_name, row_in_sheet)
+task_to_sheet_row = {}
+for sheet_name, dept_set in [("Team_Creative", CREATIVE_DEPTS), ("Team_Booking", BOOKING_DEPTS)]:
+    team_ws = wb[sheet_name]
+    for row_idx in range(2, team_ws.max_row + 1):
+        ma_task = team_ws.cell(row=row_idx, column=1).value
+        task_to_sheet_row[ma_task] = (sheet_name, row_idx)
+
+for row_idx in range(2, ws.max_row + 1):
+    ma_task = ws.cell(row=row_idx, column=1).value
+    cell = ws.cell(row=row_idx, column=LINK_COL)
+
+    if ma_task in task_to_sheet_row:
+        sheet_name, target_row = task_to_sheet_row[ma_task]
+        cell.value = f"→ {sheet_name}"
+        cell.hyperlink = Hyperlink(ref=cell.coordinate, location=f"{sheet_name}!A{target_row}", display=cell.value)
+        cell.font = hyperlink_font
+    # Các task không thuộc Creative/Booking giữ nguyên text gốc
+
+# ============================================================
+# 5. Định dạng sheet Team_Creative & Team_Booking
+# ============================================================
+
+TEAM_HEADER_FILLS = {
+    "Team_Creative": PatternFill(start_color="2E75B6", end_color="2E75B6", fill_type="solid"),
+    "Team_Booking": PatternFill(start_color="C55A11", end_color="C55A11", fill_type="solid"),
+}
+
+# Độ rộng cột cho team sheets (10 cột gốc + 2 cột mới)
+team_col_widths = {
+    "A": 10, "B": 32, "C": 14, "D": 50, "E": 16,
+    "F": 14, "G": 14, "H": 12, "I": 12, "J": 22,
+    "K": 42, "L": 28,
+}
+
+for sheet_name in ["Team_Creative", "Team_Booking"]:
+    team_ws = wb[sheet_name]
+    team_header_fill = TEAM_HEADER_FILLS[sheet_name]
+
+    # Header
+    for col_idx in range(1, team_ws.max_column + 1):
+        cell = team_ws.cell(row=1, column=col_idx)
+        cell.font = header_font
+        cell.fill = team_header_fill
+        cell.alignment = header_alignment
+        cell.border = thin_border
+
+    # Data rows
+    for row_idx in range(2, team_ws.max_row + 1):
+        for col_idx in range(1, team_ws.max_column + 1):
+            cell = team_ws.cell(row=row_idx, column=col_idx)
+            cell.font = data_font
+            cell.alignment = data_alignment
+            cell.border = thin_border
+
+        # Tô màu trạng thái
+        status_cell = team_ws.cell(row=row_idx, column=STATUS_COL)
+        if status_cell.value in status_colors:
+            status_cell.fill = status_colors[status_cell.value]
+
+        # Format tiến độ
+        progress_cell = team_ws.cell(row=row_idx, column=PROGRESS_COL)
+        progress_cell.number_format = '0"%"'
+        progress_cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Data Validation trạng thái
+    team_dv = DataValidation(
+        type="list",
+        formula1='"To-do,Doing,Done,Overdue"',
+        allow_blank=True,
+        showDropDown=False,
+    )
+    team_ws.add_data_validation(team_dv)
+    team_dv.add("H2:H1000")
+
+    # Độ rộng cột
+    for col_letter, width in team_col_widths.items():
+        team_ws.column_dimensions[col_letter].width = width
+
+    # Freeze header
+    team_ws.freeze_panes = "A2"
+
+    # Link quay về Master Dashboard tại cột J
+    back_font = Font(name="Arial", size=10, color="0563C1", underline="single")
+    for row_idx in range(2, team_ws.max_row + 1):
+        cell = team_ws.cell(row=row_idx, column=LINK_COL)
+        cell.value = "← Master Dashboard"
+        cell.hyperlink = Hyperlink(ref=cell.coordinate, location="'Master Dashboard'!A1", display=cell.value)
+        cell.font = back_font
+
+# ============================================================
+# 6. Lưu file
 # ============================================================
 
 wb.save(OUTPUT_FILE)
 print(f"✅ File '{OUTPUT_FILE}' đã được tạo thành công!")
-print(f"   - Sheet: 'Master Dashboard'")
+print(f"   - Sheets: {wb.sheetnames}")
 print(f"   - Tổng số task: {len(tasks)}")
 print(f"   - Giai đoạn 1: 3 tasks (D-30 → D-21) — Lên Concept & Chuẩn bị")
 print(f"   - Giai đoạn 2: 4 tasks (D-20 → D-7)  — Sản xuất & Setup")
@@ -417,4 +550,6 @@ print(f"   - Giai đoạn 3: 4 tasks (D-7 → D-1)   — Teasing & Affiliate")
 print(f"   - Giai đoạn 4: 4 tasks (D-Day)        — Mở bán bùng nổ")
 print(f"   - Giai đoạn 5: 3 tasks (D+1 → D+3)   — Tối ưu giữa chiến dịch")
 print(f"   - Giai đoạn 6: 3 tasks (D+4 → D+10)  — Đánh giá & Duy trì")
+print(f"   - Team_Creative: {len(df_creative)} tasks ({', '.join(sorted(CREATIVE_DEPTS))})")
+print(f"   - Team_Booking:  {len(df_booking)} tasks ({', '.join(sorted(BOOKING_DEPTS))})")
 print(f"   - D-Day giả định: {D_DAY.strftime('%Y-%m-%d')}")
