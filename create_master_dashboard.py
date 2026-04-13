@@ -209,6 +209,82 @@ tasks = [
         "Tiến độ (%)": 0,
         "Link Sheet Chi tiết": "→ Sheet 'GD4_DDay'",
     },
+
+    # ── Giai đoạn 5: Tối ưu giữa chiến dịch (D+1 → D+3) ──
+    {
+        "Mã Task": "GD5-01",
+        "Giai đoạn": "GĐ5: Tối ưu giữa chiến dịch",
+        "Phòng ban": "Vận hành",
+        "Hạng mục công việc": "Phân tích số liệu ROAS để điều chỉnh ngân sách Ads",
+        "PIC": "Nguyễn Văn A",
+        "Ngày bắt đầu": d(1),
+        "Deadline": d(2),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD5_ToiUu'",
+    },
+    {
+        "Mã Task": "GD5-02",
+        "Giai đoạn": "GĐ5: Tối ưu giữa chiến dịch",
+        "Phòng ban": "CSKH",
+        "Hạng mục công việc": "Xin đánh giá 5 sao từ khách mua sớm (follow-up)",
+        "PIC": "Võ Thị F",
+        "Ngày bắt đầu": d(1),
+        "Deadline": d(3),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD5_ToiUu'",
+    },
+    {
+        "Mã Task": "GD5-03",
+        "Giai đoạn": "GĐ5: Tối ưu giữa chiến dịch",
+        "Phòng ban": "Content",
+        "Hạng mục công việc": "Đẩy thêm bài seeding trên group Facebook",
+        "PIC": "Trần Thị B",
+        "Ngày bắt đầu": d(1),
+        "Deadline": d(3),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD5_ToiUu'",
+    },
+
+    # ── Giai đoạn 6: Đánh giá & Duy trì (D+4 trở đi) ──
+    {
+        "Mã Task": "GD6-01",
+        "Giai đoạn": "GĐ6: Đánh giá & Duy trì",
+        "Phòng ban": "Booking",
+        "Hạng mục công việc": "Báo cáo đối soát doanh thu KOC (theo từng KOC)",
+        "PIC": "Lê Văn C",
+        "Ngày bắt đầu": d(4),
+        "Deadline": d(7),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD6_DanhGia'",
+    },
+    {
+        "Mã Task": "GD6-02",
+        "Giai đoạn": "GĐ6: Đánh giá & Duy trì",
+        "Phòng ban": "Vận hành",
+        "Hạng mục công việc": "Tính lương thưởng KPI 3P (Performance, Productivity, Profit)",
+        "PIC": "Hoàng Văn E",
+        "Ngày bắt đầu": d(4),
+        "Deadline": d(7),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD6_DanhGia'",
+    },
+    {
+        "Mã Task": "GD6-03",
+        "Giai đoạn": "GĐ6: Đánh giá & Duy trì",
+        "Phòng ban": "Marketing",
+        "Hạng mục công việc": "Đề xuất chiến lược duy trì bán hàng dài hạn",
+        "PIC": "Nguyễn Văn A",
+        "Ngày bắt đầu": d(5),
+        "Deadline": d(10),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD6_DanhGia'",
+    },
 ]
 
 # ============================================================
@@ -319,7 +395,7 @@ even_phase_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_typ
 
 for row_idx in range(2, ws.max_row + 1):
     giai_doan = ws.cell(row=row_idx, column=2).value or ""
-    is_odd_phase = any(tag in giai_doan for tag in ["GĐ1", "GĐ3"])
+    is_odd_phase = any(tag in giai_doan for tag in ["GĐ1", "GĐ3", "GĐ5"])
     fill = odd_phase_fill if is_odd_phase else even_phase_fill
     for col_idx in range(1, ws.max_column + 1):
         cell = ws.cell(row=row_idx, column=col_idx)
@@ -339,4 +415,6 @@ print(f"   - Giai đoạn 1: 3 tasks (D-30 → D-21) — Lên Concept & Chuẩn 
 print(f"   - Giai đoạn 2: 4 tasks (D-20 → D-7)  — Sản xuất & Setup")
 print(f"   - Giai đoạn 3: 4 tasks (D-7 → D-1)   — Teasing & Affiliate")
 print(f"   - Giai đoạn 4: 4 tasks (D-Day)        — Mở bán bùng nổ")
+print(f"   - Giai đoạn 5: 3 tasks (D+1 → D+3)   — Tối ưu giữa chiến dịch")
+print(f"   - Giai đoạn 6: 3 tasks (D+4 → D+10)  — Đánh giá & Duy trì")
 print(f"   - D-Day giả định: {D_DAY.strftime('%Y-%m-%d')}")
