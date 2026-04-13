@@ -9,6 +9,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.hyperlink import Hyperlink
+from openpyxl.formatting.rule import CellIsRule, DataBarRule
 from datetime import datetime, timedelta
 
 # ============================================================
@@ -347,6 +348,55 @@ df_cskh = df[df["Phòng ban"].isin(CSKH_DEPTS)].copy()
 df_cskh["KPI / Yêu cầu đầu ra"] = df_cskh["Mã Task"].map(KPI_MAP).fillna("")
 df_cskh["Ghi chú nội bộ"] = ""
 
+# ============================================================
+# 1c. Dữ liệu KPI Tracker (Lương & Thưởng)
+# ============================================================
+
+kpi_tracker_data = [
+    {
+        "Vị trí": "Vận hành sàn (E-commerce)",
+        "Lương cứng": 10_000_000,
+        "KPI Trách nhiệm tối đa": 5_000_000,
+        "Cơ chế Thưởng Doanh số": "Từ mốc 1 tỷ: 0.5% DS; 2 tỷ: 0.8% DS; 3 tỷ+: 1% DS",
+        "Kết quả đánh giá %": 85,
+        "Thưởng dự kiến": 4_250_000,
+    },
+    {
+        "Vị trí": "Creative (Content + Design)",
+        "Lương cứng": 9_000_000,
+        "KPI Trách nhiệm tối đa": 4_000_000,
+        "Cơ chế Thưởng Doanh số": "Thưởng cố định theo campaign: 3tr/chiến dịch đạt KPI",
+        "Kết quả đánh giá %": 90,
+        "Thưởng dự kiến": 3_600_000,
+    },
+    {
+        "Vị trí": "Booking (KOC/PR)",
+        "Lương cứng": 8_000_000,
+        "KPI Trách nhiệm tối đa": 4_000_000,
+        "Cơ chế Thưởng Doanh số": "2% doanh thu từ link Affiliate KOC quản lý",
+        "Kết quả đánh giá %": 75,
+        "Thưởng dự kiến": 3_000_000,
+    },
+    {
+        "Vị trí": "CSKH (Chăm sóc khách hàng)",
+        "Lương cứng": 7_500_000,
+        "KPI Trách nhiệm tối đa": 3_000_000,
+        "Cơ chế Thưởng Doanh số": "Thưởng chốt đơn: 5K/đơn chat; 10K/đơn livestream",
+        "Kết quả đánh giá %": 80,
+        "Thưởng dự kiến": 2_400_000,
+    },
+    {
+        "Vị trí": "Marketing (Chiến lược)",
+        "Lương cứng": 12_000_000,
+        "KPI Trách nhiệm tối đa": 6_000_000,
+        "Cơ chế Thưởng Doanh số": "Thưởng theo ROAS: đạt ≥ 3.0 được 5tr; ≥ 5.0 được 8tr",
+        "Kết quả đánh giá %": 92,
+        "Thưởng dự kiến": 5_520_000,
+    },
+]
+
+df_kpi = pd.DataFrame(kpi_tracker_data)
+
 OUTPUT_FILE = "TIAN_Launch_MasterPlan_6Phases.xlsx"
 
 with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
@@ -355,6 +405,7 @@ with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
     df_booking.to_excel(writer, sheet_name="Team_Booking", index=False)
     df_vanhanh.to_excel(writer, sheet_name="Team_VanHanh", index=False)
     df_cskh.to_excel(writer, sheet_name="Team_CSKH", index=False)
+    df_kpi.to_excel(writer, sheet_name="KPI_Tracker", index=False)
 
 # ============================================================
 # 3. Định dạng (format) bằng openpyxl
@@ -489,7 +540,7 @@ for row_idx in range(2, ws.max_row + 1):
     # Các task không thuộc Creative/Booking giữ nguyên text gốc
 
 # ============================================================
-# 5. Định dạng sheet Team_Creative & Team_Booking
+# 5. Định dạng các sheet Team
 # ============================================================
 
 TEAM_HEADER_FILLS = {
@@ -562,7 +613,152 @@ for sheet_name in ["Team_Creative", "Team_Booking", "Team_VanHanh", "Team_CSKH"]
         cell.font = back_font
 
 # ============================================================
-# 6. Lưu file
+# 6. Định dạng sheet KPI_Tracker
+# ============================================================
+
+kpi_ws = wb["KPI_Tracker"]
+kpi_header_fill = PatternFill(start_color="BF8F00", end_color="BF8F00", fill_type="solid")  # Vàng đậm
+
+# Header
+for col_idx in range(1, kpi_ws.max_column + 1):
+    cell = kpi_ws.cell(row=1, column=col_idx)
+    cell.font = header_font
+    cell.fill = kpi_header_fill
+    cell.alignment = header_alignment
+    cell.border = thin_border
+
+# Data rows
+for row_idx in range(2, kpi_ws.max_row + 1):
+    for col_idx in range(1, kpi_ws.max_column + 1):
+        cell = kpi_ws.cell(row=row_idx, column=col_idx)
+        cell.font = data_font
+        cell.alignment = data_alignment
+        cell.border = thin_border
+
+    # Format tiền tệ: Lương cứng (B), KPI max (C), Thưởng dự kiến (F)
+    for money_col in [2, 3, 6]:
+        cell = kpi_ws.cell(row=row_idx, column=money_col)
+        cell.number_format = '#,##0'
+        cell.alignment = Alignment(horizontal="right", vertical="center")
+
+    # Format % cho Kết quả đánh giá (E)
+    eval_cell = kpi_ws.cell(row=row_idx, column=5)
+    eval_cell.number_format = '0"%"'
+    eval_cell.alignment = Alignment(horizontal="center", vertical="center")
+
+# Độ rộng cột KPI_Tracker
+kpi_col_widths = {
+    "A": 30,   # Vị trí
+    "B": 16,   # Lương cứng
+    "C": 22,   # KPI Trách nhiệm tối đa
+    "D": 55,   # Cơ chế Thưởng Doanh số
+    "E": 18,   # Kết quả đánh giá %
+    "F": 18,   # Thưởng dự kiến
+}
+for col_letter, width in kpi_col_widths.items():
+    kpi_ws.column_dimensions[col_letter].width = width
+
+kpi_ws.freeze_panes = "A2"
+
+# Công thức tính Thưởng dự kiến = KPI max × Kết quả %
+for row_idx in range(2, kpi_ws.max_row + 1):
+    cell = kpi_ws.cell(row=row_idx, column=6)
+    cell.value = f"=C{row_idx}*E{row_idx}/100"
+    cell.number_format = '#,##0'
+
+# Link quay về Master Dashboard
+for row_idx in range(2, kpi_ws.max_row + 1):
+    # Thêm cột G làm link
+    cell = kpi_ws.cell(row=row_idx, column=7)
+    cell.value = "← Master Dashboard"
+    cell.hyperlink = Hyperlink(ref=cell.coordinate, location="'Master Dashboard'!A1", display=cell.value)
+    cell.font = Font(name="Arial", size=10, color="0563C1", underline="single")
+# Header cho cột G
+g_header = kpi_ws.cell(row=1, column=7)
+g_header.value = "Điều hướng"
+g_header.font = header_font
+g_header.fill = kpi_header_fill
+g_header.alignment = header_alignment
+g_header.border = thin_border
+kpi_ws.column_dimensions["G"].width = 22
+
+# ============================================================
+# 7. Conditional Formatting cho TẤT CẢ sheets có cột Trạng thái
+# ============================================================
+
+# Các sheet có cột Trạng thái (H) và Tiến độ (I)
+task_sheets = ["Master Dashboard", "Team_Creative", "Team_Booking", "Team_VanHanh", "Team_CSKH"]
+
+# Màu cho Conditional Formatting (cập nhật theo yêu cầu mới)
+cf_status_styles = {
+    "To-do":   (PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"),   # Xám
+                Font(name="Arial", size=10, color="595959")),
+    "Doing":   (PatternFill(start_color="FFE699", end_color="FFE699", fill_type="solid"),    # Vàng
+                Font(name="Arial", size=10, color="7F6003")),
+    "Done":    (PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid"),    # Xanh lá
+                Font(name="Arial", size=10, color="006100")),
+    "Overdue": (PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid"),    # Đỏ
+                Font(name="Arial", size=10, bold=True, color="9C0006")),
+}
+
+for sheet_name in task_sheets:
+    target_ws = wb[sheet_name]
+    max_row = target_ws.max_row
+    status_range = f"H2:H{max(max_row, 100)}"
+    progress_range = f"I2:I{max(max_row, 100)}"
+
+    # Conditional Formatting cho cột Trạng thái
+    for status_val, (cf_fill, cf_font) in cf_status_styles.items():
+        target_ws.conditional_formatting.add(
+            status_range,
+            CellIsRule(
+                operator="equal",
+                formula=[f'"{status_val}"'],
+                fill=cf_fill,
+                font=cf_font,
+            ),
+        )
+
+    # Data Bars (thanh dữ liệu xanh) cho cột Tiến độ (%)
+    target_ws.conditional_formatting.add(
+        progress_range,
+        DataBarRule(
+            start_type="num",
+            start_value=0,
+            end_type="num",
+            end_value=100,
+            color="4472C4",   # Xanh dương
+        ),
+    )
+
+# Cũng cập nhật lại màu trạng thái tĩnh trên Master Dashboard theo màu mới
+updated_status_colors = {
+    "To-do":   PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"),
+    "Doing":   PatternFill(start_color="FFE699", end_color="FFE699", fill_type="solid"),
+    "Done":    PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid"),
+    "Overdue": PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid"),
+}
+for sheet_name in task_sheets:
+    target_ws = wb[sheet_name]
+    for row_idx in range(2, target_ws.max_row + 1):
+        status_cell = target_ws.cell(row=row_idx, column=STATUS_COL)
+        if status_cell.value in updated_status_colors:
+            status_cell.fill = updated_status_colors[status_cell.value]
+
+# Data Bar cho cột Kết quả đánh giá trên KPI_Tracker (cột E)
+kpi_ws.conditional_formatting.add(
+    f"E2:E{kpi_ws.max_row}",
+    DataBarRule(
+        start_type="num",
+        start_value=0,
+        end_type="num",
+        end_value=100,
+        color="70AD47",   # Xanh lá
+    ),
+)
+
+# ============================================================
+# 8. Lưu file hoàn chỉnh
 # ============================================================
 
 wb.save(OUTPUT_FILE)
@@ -575,8 +771,10 @@ print(f"   - Giai đoạn 3: 4 tasks (D-7 → D-1)   — Teasing & Affiliate")
 print(f"   - Giai đoạn 4: 4 tasks (D-Day)        — Mở bán bùng nổ")
 print(f"   - Giai đoạn 5: 3 tasks (D+1 → D+3)   — Tối ưu giữa chiến dịch")
 print(f"   - Giai đoạn 6: 3 tasks (D+4 → D+10)  — Đánh giá & Duy trì")
-print(f"   - Team_Creative: {len(df_creative)} tasks ({', '.join(sorted(CREATIVE_DEPTS))})")
-print(f"   - Team_Booking:  {len(df_booking)} tasks ({', '.join(sorted(BOOKING_DEPTS))})")
-print(f"   - Team_VanHanh:  {len(df_vanhanh)} tasks ({', '.join(sorted(VANHANH_DEPTS))})")
-print(f"   - Team_CSKH:     {len(df_cskh)} tasks ({', '.join(sorted(CSKH_DEPTS))})")
+print(f"   - Team_Creative: {len(df_creative)} tasks")
+print(f"   - Team_Booking:  {len(df_booking)} tasks")
+print(f"   - Team_VanHanh:  {len(df_vanhanh)} tasks")
+print(f"   - Team_CSKH:     {len(df_cskh)} tasks")
+print(f"   - KPI_Tracker:   {len(df_kpi)} vị trí")
+print(f"   - Conditional Formatting: Trạng thái (4 màu) + Data Bars (Tiến độ)")
 print(f"   - D-Day giả định: {D_DAY.strftime('%Y-%m-%d')}")
