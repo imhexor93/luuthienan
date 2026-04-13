@@ -109,6 +109,106 @@ tasks = [
         "Tiến độ (%)": 0,
         "Link Sheet Chi tiết": "→ Sheet 'GD2_SanXuat'",
     },
+
+    # ── Giai đoạn 3: Teasing & Affiliate (D-7 → D-1) ──
+    {
+        "Mã Task": "GD3-01",
+        "Giai đoạn": "GĐ3: Teasing & Affiliate",
+        "Phòng ban": "Booking",
+        "Hạng mục công việc": "Gửi PR Box cho KOC (unboxing & review)",
+        "PIC": "Lê Văn C",
+        "Ngày bắt đầu": d(-7),
+        "Deadline": d(-5),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD3_Teasing'",
+    },
+    {
+        "Mã Task": "GD3-02",
+        "Giai đoạn": "GĐ3: Teasing & Affiliate",
+        "Phòng ban": "Creative",
+        "Hạng mục công việc": "Lên video teaser trên TikTok (countdown, sneak peek)",
+        "PIC": "Trần Thị B",
+        "Ngày bắt đầu": d(-6),
+        "Deadline": d(-2),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD3_Teasing'",
+    },
+    {
+        "Mã Task": "GD3-03",
+        "Giai đoạn": "GĐ3: Teasing & Affiliate",
+        "Phòng ban": "Vận hành",
+        "Hạng mục công việc": "Thiết lập Voucher / Flash Sale trên các sàn",
+        "PIC": "Hoàng Văn E",
+        "Ngày bắt đầu": d(-5),
+        "Deadline": d(-2),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD3_Teasing'",
+    },
+    {
+        "Mã Task": "GD3-04",
+        "Giai đoạn": "GĐ3: Teasing & Affiliate",
+        "Phòng ban": "CSKH",
+        "Hạng mục công việc": "Chuẩn bị FAQ & kịch bản trả lời cho CSKH",
+        "PIC": "Võ Thị F",
+        "Ngày bắt đầu": d(-4),
+        "Deadline": d(-1),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD3_Teasing'",
+    },
+
+    # ── Giai đoạn 4: D-Day Mở bán bùng nổ (D-Day) ──
+    {
+        "Mã Task": "GD4-01",
+        "Giai đoạn": "GĐ4: D-Day Mở bán bùng nổ",
+        "Phòng ban": "Creative",
+        "Hạng mục công việc": "Đồng loạt push video lên TikTok, Reels, YouTube Shorts",
+        "PIC": "Trần Thị B",
+        "Ngày bắt đầu": d(0),
+        "Deadline": d(0),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD4_DDay'",
+    },
+    {
+        "Mã Task": "GD4-02",
+        "Giai đoạn": "GĐ4: D-Day Mở bán bùng nổ",
+        "Phòng ban": "Booking",
+        "Hạng mục công việc": "Push KOC lên bài kèm link Affiliate đồng loạt",
+        "PIC": "Lê Văn C",
+        "Ngày bắt đầu": d(0),
+        "Deadline": d(0),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD4_DDay'",
+    },
+    {
+        "Mã Task": "GD4-03",
+        "Giai đoạn": "GĐ4: D-Day Mở bán bùng nổ",
+        "Phòng ban": "Vận hành",
+        "Hạng mục công việc": "Bật TikTok Ads / Shopee Ads chuyển đổi",
+        "PIC": "Nguyễn Văn A",
+        "Ngày bắt đầu": d(0),
+        "Deadline": d(0),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD4_DDay'",
+    },
+    {
+        "Mã Task": "GD4-04",
+        "Giai đoạn": "GĐ4: D-Day Mở bán bùng nổ",
+        "Phòng ban": "CSKH",
+        "Hạng mục công việc": "Trực chat và chốt đơn liên tục (Shopee, Lazada, TikTok)",
+        "PIC": "Võ Thị F",
+        "Ngày bắt đầu": d(0),
+        "Deadline": d(0),
+        "Trạng thái": "To-do",
+        "Tiến độ (%)": 0,
+        "Link Sheet Chi tiết": "→ Sheet 'GD4_DDay'",
+    },
 ]
 
 # ============================================================
@@ -214,12 +314,13 @@ for col_letter, width in column_widths.items():
 ws.freeze_panes = "A2"
 
 # --- 3f. Tô màu xen kẽ nhóm Giai đoạn ---
-gd1_fill = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")  # Xám nhạt
-gd2_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")  # Trắng
+odd_phase_fill = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")   # Xám nhạt (GĐ1, GĐ3)
+even_phase_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")   # Trắng   (GĐ2, GĐ4)
 
 for row_idx in range(2, ws.max_row + 1):
     giai_doan = ws.cell(row=row_idx, column=2).value or ""
-    fill = gd1_fill if "GĐ1" in giai_doan else gd2_fill
+    is_odd_phase = any(tag in giai_doan for tag in ["GĐ1", "GĐ3"])
+    fill = odd_phase_fill if is_odd_phase else even_phase_fill
     for col_idx in range(1, ws.max_column + 1):
         cell = ws.cell(row=row_idx, column=col_idx)
         # Không ghi đè màu trạng thái
@@ -233,7 +334,9 @@ for row_idx in range(2, ws.max_row + 1):
 wb.save(OUTPUT_FILE)
 print(f"✅ File '{OUTPUT_FILE}' đã được tạo thành công!")
 print(f"   - Sheet: 'Master Dashboard'")
-print(f"   - Số task: {len(tasks)}")
-print(f"   - Giai đoạn 1: 3 tasks (D-30 → D-21)")
-print(f"   - Giai đoạn 2: 4 tasks (D-20 → D-7)")
+print(f"   - Tổng số task: {len(tasks)}")
+print(f"   - Giai đoạn 1: 3 tasks (D-30 → D-21) — Lên Concept & Chuẩn bị")
+print(f"   - Giai đoạn 2: 4 tasks (D-20 → D-7)  — Sản xuất & Setup")
+print(f"   - Giai đoạn 3: 4 tasks (D-7 → D-1)   — Teasing & Affiliate")
+print(f"   - Giai đoạn 4: 4 tasks (D-Day)        — Mở bán bùng nổ")
 print(f"   - D-Day giả định: {D_DAY.strftime('%Y-%m-%d')}")
