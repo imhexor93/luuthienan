@@ -294,6 +294,8 @@ tasks = [
 
 CREATIVE_DEPTS = {"Creative", "Content", "Design"}
 BOOKING_DEPTS = {"Booking", "KOC/PR"}
+VANHANH_DEPTS = {"Vận hành", "E-commerce"}
+CSKH_DEPTS = {"CSKH"}
 
 # KPI gợi ý theo từng task
 KPI_MAP = {
@@ -310,6 +312,16 @@ KPI_MAP = {
     "GD3-01": "100% PR Box gửi đúng hạn, có tracking",
     "GD4-02": "≥ 10 KOC đăng bài đúng D-Day, kèm link Affiliate",
     "GD6-01": "Báo cáo đối soát hoàn thành trong 3 ngày, sai lệch < 2%",
+    # Team Vận Hành
+    "GD2-04": "100% sản phẩm lên sàn đúng hạn, listing đầy đủ hình + mô tả",
+    "GD3-03": "Voucher/Flash Sale active trước D-Day 48h, test thành công",
+    "GD4-03": "ROAS Ads D-Day ≥ 3.0, budget burn rate đúng kế hoạch",
+    "GD5-01": "Báo cáo ROAS trong 24h, đề xuất điều chỉnh ngân sách cụ thể",
+    "GD6-02": "Bảng tính KPI 3P hoàn thành, sai số < 1%",
+    # Team CSKH
+    "GD3-04": "FAQ ≥ 30 câu, kịch bản chat đạt duyệt trước D-2",
+    "GD4-04": "Tỷ lệ phản hồi < 5 phút, tỷ lệ chốt đơn ≥ 40%",
+    "GD5-02": "≥ 50 đánh giá 5 sao trong 3 ngày đầu",
 }
 
 # ============================================================
@@ -327,12 +339,22 @@ df_booking = df[df["Phòng ban"].isin(BOOKING_DEPTS)].copy()
 df_booking["KPI / Yêu cầu đầu ra"] = df_booking["Mã Task"].map(KPI_MAP).fillna("")
 df_booking["Ghi chú nội bộ"] = ""
 
+df_vanhanh = df[df["Phòng ban"].isin(VANHANH_DEPTS)].copy()
+df_vanhanh["KPI / Yêu cầu đầu ra"] = df_vanhanh["Mã Task"].map(KPI_MAP).fillna("")
+df_vanhanh["Ghi chú nội bộ"] = ""
+
+df_cskh = df[df["Phòng ban"].isin(CSKH_DEPTS)].copy()
+df_cskh["KPI / Yêu cầu đầu ra"] = df_cskh["Mã Task"].map(KPI_MAP).fillna("")
+df_cskh["Ghi chú nội bộ"] = ""
+
 OUTPUT_FILE = "TIAN_Launch_MasterPlan_6Phases.xlsx"
 
 with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
     df.to_excel(writer, sheet_name="Master Dashboard", index=False)
     df_creative.to_excel(writer, sheet_name="Team_Creative", index=False)
     df_booking.to_excel(writer, sheet_name="Team_Booking", index=False)
+    df_vanhanh.to_excel(writer, sheet_name="Team_VanHanh", index=False)
+    df_cskh.to_excel(writer, sheet_name="Team_CSKH", index=False)
 
 # ============================================================
 # 3. Định dạng (format) bằng openpyxl
@@ -448,7 +470,8 @@ hyperlink_font = Font(name="Arial", size=10, color="0563C1", underline="single")
 
 # Xây dựng map: Mã Task → (sheet_name, row_in_sheet)
 task_to_sheet_row = {}
-for sheet_name, dept_set in [("Team_Creative", CREATIVE_DEPTS), ("Team_Booking", BOOKING_DEPTS)]:
+for sheet_name, dept_set in [("Team_Creative", CREATIVE_DEPTS), ("Team_Booking", BOOKING_DEPTS),
+                              ("Team_VanHanh", VANHANH_DEPTS), ("Team_CSKH", CSKH_DEPTS)]:
     team_ws = wb[sheet_name]
     for row_idx in range(2, team_ws.max_row + 1):
         ma_task = team_ws.cell(row=row_idx, column=1).value
@@ -470,8 +493,10 @@ for row_idx in range(2, ws.max_row + 1):
 # ============================================================
 
 TEAM_HEADER_FILLS = {
-    "Team_Creative": PatternFill(start_color="2E75B6", end_color="2E75B6", fill_type="solid"),
-    "Team_Booking": PatternFill(start_color="C55A11", end_color="C55A11", fill_type="solid"),
+    "Team_Creative": PatternFill(start_color="2E75B6", end_color="2E75B6", fill_type="solid"),   # Xanh dương
+    "Team_Booking": PatternFill(start_color="C55A11", end_color="C55A11", fill_type="solid"),    # Cam
+    "Team_VanHanh": PatternFill(start_color="548235", end_color="548235", fill_type="solid"),    # Xanh lá đậm
+    "Team_CSKH": PatternFill(start_color="7030A0", end_color="7030A0", fill_type="solid"),       # Tím
 }
 
 # Độ rộng cột cho team sheets (10 cột gốc + 2 cột mới)
@@ -481,7 +506,7 @@ team_col_widths = {
     "K": 42, "L": 28,
 }
 
-for sheet_name in ["Team_Creative", "Team_Booking"]:
+for sheet_name in ["Team_Creative", "Team_Booking", "Team_VanHanh", "Team_CSKH"]:
     team_ws = wb[sheet_name]
     team_header_fill = TEAM_HEADER_FILLS[sheet_name]
 
@@ -552,4 +577,6 @@ print(f"   - Giai đoạn 5: 3 tasks (D+1 → D+3)   — Tối ưu giữa chiế
 print(f"   - Giai đoạn 6: 3 tasks (D+4 → D+10)  — Đánh giá & Duy trì")
 print(f"   - Team_Creative: {len(df_creative)} tasks ({', '.join(sorted(CREATIVE_DEPTS))})")
 print(f"   - Team_Booking:  {len(df_booking)} tasks ({', '.join(sorted(BOOKING_DEPTS))})")
+print(f"   - Team_VanHanh:  {len(df_vanhanh)} tasks ({', '.join(sorted(VANHANH_DEPTS))})")
+print(f"   - Team_CSKH:     {len(df_cskh)} tasks ({', '.join(sorted(CSKH_DEPTS))})")
 print(f"   - D-Day giả định: {D_DAY.strftime('%Y-%m-%d')}")
