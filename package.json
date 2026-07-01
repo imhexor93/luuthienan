@@ -1,0 +1,17 @@
+{
+  "name": "rd-project-manager",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"server,client\" -c \"blue,green\" \"pnpm --filter @rd/server dev\" \"pnpm --filter @rd/client dev\"",
+    "build": "pnpm --filter @rd/server build && pnpm --filter @rd/client build",
+    "seed": "pnpm --filter @rd/server seed",
+    "install:all": "pnpm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3", "esbuild"]
+  }
+}

@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: rd_server
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_PATH=/app/data/rd_projects.db
+    volumes:
+      - rd_data:/app/data
+    networks:
+      - rd_net
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: rd_client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - rd_net
+
+volumes:
+  rd_data:
+    driver: local
+
+networks:
+  rd_net:
+    driver: bridge

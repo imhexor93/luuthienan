@@ -1,0 +1,40 @@
+FROM node:20-alpine AS builder
+
+RUN npm install -g pnpm typescript
+WORKDIR /app
+
+# Copy workspace config + tất cả packages
+COPY pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json ./
+COPY shared/ ./shared/
+COPY server/ ./server/
+COPY client/package.json ./client/
+
+# Install (including devDependencies for build)
+RUN pnpm install --frozen-lockfile || pnpm install
+
+# Build shared -> server
+RUN pnpm --filter @rd/shared build
+RUN pnpm --filter @rd/server build
+
+# Create production deployment bundle (flat node_modules, no symlinks)
+RUN pnpm --filter @rd/server deploy --prod --legacy /app/server-deploy
+
+# ---- Runtime image ----
+FROM node:20-alpine
+WORKDIR /app/server
+
+# Copy the deploy bundle (has flat node_modules + package files)
+COPY --from=builder /app/server-deploy ./
+
+# Copy compiled server dist into the deploy bundle's location
+COPY --from=builder /app/server/dist ./dist/
+
+# Copy shared dist so @rd/shared resolves at runtime
+COPY --from=builder /app/shared/dist /app/server/node_modules/@rd/shared/dist/
+COPY --from=builder /app/shared/package.json /app/server/node_modules/@rd/shared/package.json
+
+RUN mkdir -p /app/data/uploads
+
+EXPOSE 3001
+CMD ["node", "dist/server/src/index.js"]

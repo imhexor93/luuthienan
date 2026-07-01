@@ -1,0 +1,24 @@
+FROM node:20-alpine AS builder
+
+RUN npm install -g pnpm typescript
+WORKDIR /app
+
+# Copy workspace
+COPY pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json ./
+COPY shared/ ./shared/
+COPY client/ ./client/
+COPY server/package.json ./server/
+
+# Install
+RUN pnpm install --frozen-lockfile || pnpm install
+
+# Build shared -> client
+RUN pnpm --filter @rd/shared build
+RUN pnpm --filter @rd/client build
+
+# ---- Nginx ----
+FROM nginx:alpine
+COPY --from=builder /app/client/dist /usr/share/nginx/html
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
